@@ -65,33 +65,13 @@ class CustomTextField extends StatelessWidget {
           {required currentLength, required isFocused, required maxLength}) {
         if (!isShowingCounter) return null;
 
-        // Get the current error text from validation
-        final String? errorText =
-            validator != null ? validator!(controller.text) : null;
-
         if (counterBuilder != null) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              counterBuilder!(context, currentLength, maxLength),
-
-              // Add error text below the counter if there is an error
-              if (errorText != null) _errorText(errorText),
-            ],
-          );
+          return counterBuilder!(context, currentLength, maxLength);
         }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CounterText(
-              currentLength: currentLength,
-              maxLength: minLength ?? maxLength ?? 0,
-            ),
-
-            // Add error text below the counter if there is an error
-            if (errorText != null) _errorText(errorText)
-          ],
+        return CounterText(
+          currentLength: currentLength,
+          maxLength: minLength ?? maxLength ?? 0,
         );
       },
       keyboardType: keyboardType,

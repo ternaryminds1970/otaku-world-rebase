@@ -25,7 +25,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../bloc/profile/reviews/user_reviews_bloc.dart';
+import '../../../bloc/viewer/viewer_bloc.dart';
+import '../../../config/router/router_constants.dart';
 import '../../../core/ui/appbars/simple_app_bar.dart';
+import '../../../graphql/__generated/graphql/reviews/post_review.graphql.dart';
 import '../../../theme/colors.dart';
 import '../../../utils/formatting_utils.dart';
 import '../../../utils/navigation_helper.dart';
@@ -52,10 +55,11 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
-          _onPopInvoked(context);
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
         }
+        _onPopInvoked(context);
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -159,7 +163,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontFamily: 'Roboto',
-                                  color: AppColors.white.withOpacity(0.8),
+                                  color: AppColors.white.withValues(alpha: 0.8),
                                 ),
                       ),
                     ),
@@ -170,7 +174,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontFamily: 'Roboto',
-                                  color: AppColors.white.withOpacity(0.8),
+                                  color: AppColors.white.withValues(alpha: 0.8),
                                 ),
                       ),
                     ),
@@ -230,23 +234,34 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     );
   }
 
-  void _updateReview({required Enum$ReviewRating rating, required int id}) {
+  void _updateReview({
+    Enum$ReviewRating? rating,
+    required int id,
+    bool isDeleted = false,
+    Mutation$SaveReview$SaveReview? savedReview,
+  }) {
     if (widget.bloc != null) {
       dev.log('Updating rating');
       if (widget.bloc is ReviewsBloc) {
         (widget.bloc as ReviewsBloc).updateReviewRating(
           reviewId: id,
           userRating: rating,
+          isDeleted: isDeleted,
+          savedReview: savedReview,
         );
       } else if (widget.bloc is MediaReviewBloc) {
         (widget.bloc as MediaReviewBloc).updateReviewRating(
           reviewId: id,
           userRating: rating,
+          isDeleted: isDeleted,
+          savedReview: savedReview,
         );
       } else if (widget.bloc is UserReviewsBloc) {
         (widget.bloc as UserReviewsBloc).updateReviewRating(
           reviewId: id,
           userRating: rating,
+          isDeleted: isDeleted,
+          savedReview: savedReview,
         );
       }
     }
@@ -290,7 +305,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
           padding: const EdgeInsets.only(right: 10),
           child: IconButton(
             onPressed: () {
-              showModalBottomSheetCustom(context, id);
+              showModalBottomSheetCustom(context, id, review.user?.id);
             },
             icon: SvgPicture.asset(Assets.iconsMoreHorizontal),
           ),
@@ -329,7 +344,13 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     );
   }
 
-  void showModalBottomSheetCustom(BuildContext context, int id) {
+  void showModalBottomSheetCustom(
+    BuildContext context,
+    int mediaId,
+    int? reviewUserId,
+  ) {
+    final userId = context.read<ViewerBloc>().getUser().id;
+
     showModalBottomSheet(
       backgroundColor: AppColors.darkCharcoal,
       context: context,
@@ -365,12 +386,48 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                 const SizedBox(
                   height: 20,
                 ),
+                if (userId == reviewUserId) ...[
+                  BottomSheetComponent(
+                    onTap: () {
+                      context.pop();
+                      final result = context.push(
+                        '${RouteConstants.postReview}?userId=$userId&mediaId=$mediaId',
+                      );
+                      if (result is bool) {
+                        _updateReview(id: reviewId, isDeleted: result as bool);
+                      } else if (result is Mutation$SaveReview$SaveReview) {
+                        _updateReview(
+                          id: reviewId,
+                          savedReview: result as Mutation$SaveReview$SaveReview,
+                        );
+                      }
+                    },
+                    iconName: Assets.iconsEdit,
+                    text: 'Edit this review',
+                  ),
+                ],
+                BottomSheetComponent(
+                  onTap: () async {
+                    final Uri reviewUri = Uri(
+                      scheme: 'https',
+                      host: 'anilist.co',
+                      path: 'review/$reviewId',
+                    );
+                    context.pop();
+                    await launchUrl(
+                      reviewUri,
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  iconName: Assets.iconsLinkSquare,
+                  text: 'View on AniList',
+                ),
                 BottomSheetComponent(
                   onTap: () {
                     context.pop(); //to close the bottom sheet
                     NavigationHelper.goToMediaDetailScreen(
                       context: context,
-                      mediaId: id,
+                      mediaId: mediaId,
                     );
                   },
                   iconName: Assets.iconsOpenLink2,

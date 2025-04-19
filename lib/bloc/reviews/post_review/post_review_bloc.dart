@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:otaku_world/graphql/__generated/graphql/reviews/delete_review.graphql.dart';
 import 'package:otaku_world/graphql/__generated/graphql/reviews/fetch_review.graphql.dart';
 import 'package:otaku_world/graphql/__generated/graphql/reviews/post_review.graphql.dart';
 
@@ -13,6 +14,7 @@ class PostReviewBloc extends Bloc<PostReviewEvent, PostReviewState> {
   PostReviewBloc() : super(PostReviewInitial()) {
     on<FetchReview>(_onFetchReview);
     on<SubmitReview>(_onSubmitReview);
+    on<DeleteReview>(_onDeleteReview);
   }
 
   Future<void> _onFetchReview(
@@ -85,6 +87,55 @@ class PostReviewBloc extends Bloc<PostReviewEvent, PostReviewState> {
             ),
           );
         }
+      } else {
+        emit(
+          ReviewSaved(
+            savedReview: response.parsedData?.SaveReview,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(PostReviewSubmitFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteReview(
+    DeleteReview event,
+    Emitter<PostReviewState> emit,
+  ) async {
+    emit(ReviewLoading());
+    try {
+      final response = await event.client.mutate$DeleteReview(
+        Options$Mutation$DeleteReview(
+          variables: Variables$Mutation$DeleteReview(
+            deleteReviewId: event.reviewId,
+          ),
+        ),
+      );
+      log('Response: $response');
+
+      if (response.hasException) {
+        final exception = response.exception!;
+        log(exception.toString());
+        if (exception.linkException != null) {
+          emit(
+            const PostReviewSubmitFailure(
+              error: 'Please check your internet connection!',
+            ),
+          );
+        } else {
+          emit(
+            const PostReviewSubmitFailure(
+              error: 'SomeThing went wrong!',
+            ),
+          );
+        }
+      } else {
+        emit(
+          ReviewSaved(
+            isDeleted: response.parsedData?.DeleteReview?.deleted,
+          ),
+        );
       }
     } catch (e) {
       emit(PostReviewSubmitFailure(error: e.toString()));

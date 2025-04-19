@@ -508,6 +508,27 @@ const documentNodeMutationSaveReview = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
+            name: NameNode(value: 'updatedAt'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'rating'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'ratingAmount'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
             arguments: [],
@@ -733,7 +754,7 @@ class Mutation$SaveReview$Widget
         );
 }
 
-class Mutation$SaveReview$SaveReview {
+class   Mutation$SaveReview$SaveReview {
   Mutation$SaveReview$SaveReview({
     required this.id,
     required this.mediaId,
@@ -742,6 +763,9 @@ class Mutation$SaveReview$SaveReview {
     this.score,
     this.private,
     required this.createdAt,
+    required this.updatedAt,
+    this.rating,
+    this.ratingAmount,
     this.$__typename = 'Review',
   });
 
@@ -753,6 +777,9 @@ class Mutation$SaveReview$SaveReview {
     final l$score = json['score'];
     final l$private = json['private'];
     final l$createdAt = json['createdAt'];
+    final l$updatedAt = json['updatedAt'];
+    final l$rating = json['rating'];
+    final l$ratingAmount = json['ratingAmount'];
     final l$$__typename = json['__typename'];
     return Mutation$SaveReview$SaveReview(
       id: (l$id as int),
@@ -762,6 +789,9 @@ class Mutation$SaveReview$SaveReview {
       score: (l$score as int?),
       private: (l$private as bool?),
       createdAt: (l$createdAt as int),
+      updatedAt: (l$updatedAt as int),
+      rating: (l$rating as int?),
+      ratingAmount: (l$ratingAmount as int?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -779,6 +809,12 @@ class Mutation$SaveReview$SaveReview {
   final bool? private;
 
   final int createdAt;
+
+  final int updatedAt;
+
+  final int? rating;
+
+  final int? ratingAmount;
 
   final String $__typename;
 
@@ -798,6 +834,12 @@ class Mutation$SaveReview$SaveReview {
     _resultData['private'] = l$private;
     final l$createdAt = createdAt;
     _resultData['createdAt'] = l$createdAt;
+    final l$updatedAt = updatedAt;
+    _resultData['updatedAt'] = l$updatedAt;
+    final l$rating = rating;
+    _resultData['rating'] = l$rating;
+    final l$ratingAmount = ratingAmount;
+    _resultData['ratingAmount'] = l$ratingAmount;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -812,6 +854,9 @@ class Mutation$SaveReview$SaveReview {
     final l$score = score;
     final l$private = private;
     final l$createdAt = createdAt;
+    final l$updatedAt = updatedAt;
+    final l$rating = rating;
+    final l$ratingAmount = ratingAmount;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -821,6 +866,9 @@ class Mutation$SaveReview$SaveReview {
       l$score,
       l$private,
       l$createdAt,
+      l$updatedAt,
+      l$rating,
+      l$ratingAmount,
       l$$__typename,
     ]);
   }
@@ -869,6 +917,21 @@ class Mutation$SaveReview$SaveReview {
     if (l$createdAt != lOther$createdAt) {
       return false;
     }
+    final l$updatedAt = updatedAt;
+    final lOther$updatedAt = other.updatedAt;
+    if (l$updatedAt != lOther$updatedAt) {
+      return false;
+    }
+    final l$rating = rating;
+    final lOther$rating = other.rating;
+    if (l$rating != lOther$rating) {
+      return false;
+    }
+    final l$ratingAmount = ratingAmount;
+    final lOther$ratingAmount = other.ratingAmount;
+    if (l$ratingAmount != lOther$ratingAmount) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -904,6 +967,9 @@ abstract class CopyWith$Mutation$SaveReview$SaveReview<TRes> {
     int? score,
     bool? private,
     int? createdAt,
+    int? updatedAt,
+    int? rating,
+    int? ratingAmount,
     String? $__typename,
   });
 }
@@ -929,6 +995,9 @@ class _CopyWithImpl$Mutation$SaveReview$SaveReview<TRes>
     Object? score = _undefined,
     Object? private = _undefined,
     Object? createdAt = _undefined,
+    Object? updatedAt = _undefined,
+    Object? rating = _undefined,
+    Object? ratingAmount = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$SaveReview$SaveReview(
@@ -944,6 +1013,13 @@ class _CopyWithImpl$Mutation$SaveReview$SaveReview<TRes>
         createdAt: createdAt == _undefined || createdAt == null
             ? _instance.createdAt
             : (createdAt as int),
+        updatedAt: updatedAt == _undefined || updatedAt == null
+            ? _instance.updatedAt
+            : (updatedAt as int),
+        rating: rating == _undefined ? _instance.rating : (rating as int?),
+        ratingAmount: ratingAmount == _undefined
+            ? _instance.ratingAmount
+            : (ratingAmount as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -964,6 +1040,9 @@ class _CopyWithStubImpl$Mutation$SaveReview$SaveReview<TRes>
     int? score,
     bool? private,
     int? createdAt,
+    int? updatedAt,
+    int? rating,
+    int? ratingAmount,
     String? $__typename,
   }) =>
       _res;

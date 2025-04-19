@@ -39,13 +39,22 @@ class PostReviewScreen extends HookWidget {
               UIUtils.showSnackBar(context, state.error);
             } else if (state is ReviewSaved) {
               UIUtils.showSnackBar(context, 'Review Saved successfully');
+              if (state.isDeleted != null) {
+                context.pop(
+                  state.isDeleted,
+                );
+              } else {
+                context.pop(
+                  state.savedReview,
+                );
+              }
             }
           },
           builder: (context, state) {
             if (state is PostReviewInitial || state is ReviewLoading) {
               return const SimpleLoading();
-            } else if (state is ReviewLoaded) {
-              if (state.review != null) {
+            } else {
+              if (state is ReviewLoaded && state.review != null) {
                 final review = state.review;
                 if (review!.summary != null) {
                   reviewSummaryTextField.text = review.summary!;
@@ -79,7 +88,9 @@ class PostReviewScreen extends HookWidget {
                               RouteConstants.writeReview,
                               extra: commentTextField,
                             );
-                            commentTextField.text = result as String;
+                            if (result is String) {
+                              commentTextField.text = result as String;
+                            }
                           },
                           label: 'Write a Review ',
                           fontSize: 14,
@@ -205,6 +216,11 @@ class PostReviewScreen extends HookWidget {
                       ),
                       PrimaryButton(
                         onTap: () {
+                          if (commentTextField.text.length < 2200) {
+                            UIUtils.showSnackBar(context,
+                                'The text must be at least 2200 characters.');
+                            return;
+                          }
                           if (_formKey.currentState?.validate() ?? false) {
                             final client = (context
                                     .read<GraphqlClientCubit>()
@@ -218,19 +234,38 @@ class PostReviewScreen extends HookWidget {
                                     score: int.parse(scoreTextField.text),
                                     client: client,
                                     isPrivate: isPrivate,
-                                    reviewId: state.review?.id,
+                                    reviewId: state is ReviewLoaded
+                                        ? state.review?.id
+                                        : null,
                                   ),
                                 );
                           }
                         },
                         label: 'Post Review',
                       ),
+                      if (state is ReviewLoaded &&
+                          state.review?.id != null) ...[
+                        PrimaryOutlinedButton(
+                          onTap: () {
+                            final client = (context
+                                    .read<GraphqlClientCubit>()
+                                    .state as GraphqlClientInitialized)
+                                .client;
+                            context.read<PostReviewBloc>().add(
+                                  DeleteReview(
+                                    reviewId: state.review!.id,
+                                    client: client,
+                                  ),
+                                );
+                          },
+                          label: 'Delete Review',
+                        ),
+                      ],
                     ],
                   ),
                 ),
               );
             }
-            return const SizedBox();
           },
         ),
       ),

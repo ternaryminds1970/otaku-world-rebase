@@ -1,0 +1,5 @@
+mutation DeleteReview($deleteReviewId: Int) {
+    DeleteReview(id: $deleteReviewId) {
+        deleted
+    }
+}

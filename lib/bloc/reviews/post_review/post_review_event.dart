@@ -38,3 +38,16 @@ class SubmitReview extends PostReviewEvent {
   List<Object?> get props =>
       [reviewId, mediaId, body, summary, score, isPrivate];
 }
+
+class DeleteReview extends PostReviewEvent {
+  final int reviewId;
+  final GraphQLClient client;
+
+  const DeleteReview({
+    required this.reviewId,
+    required this.client,
+  });
+
+  @override
+  List<Object?> get props => [reviewId, client];
+}
