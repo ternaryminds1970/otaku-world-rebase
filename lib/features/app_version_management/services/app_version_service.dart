@@ -48,4 +48,15 @@ class AppVersionService {
 
     return '$versionName ($buildNumber)';
   }
+
+  static Future<String> getVersionName() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    final versionName = info.version;
+    final buildNumber = info.buildNumber;
+
+    log('Version Name: $versionName, Build Number: $buildNumber',
+        name: 'App Version Management');
+
+    return 'Version $versionName';
+  }
 }

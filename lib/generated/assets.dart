@@ -2,6 +2,10 @@
 class Assets {
   Assets._();
 
+  static const String aboutUsAnilist = 'assets/icons/about_us/anilist.svg';
+  static const String aboutUsGithub = 'assets/icons/about_us/github.svg';
+  static const String aboutUsGmail = 'assets/icons/about_us/gmail.svg';
+  static const String aboutUsPlaystore = 'assets/icons/about_us/playstore.svg';
   static const String animeDemonSlayer = 'assets/images/discover/anime/demon_slayer.png';
   static const String animeFrieren = 'assets/images/discover/anime/frieren.jpg';
   static const String animeNaruto = 'assets/images/discover/anime/naruto.png';

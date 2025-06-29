@@ -27,7 +27,7 @@ class AppColors {
   static const Color lightSilver = Color(0xFFD9D9D9);
   static const Color darkMagenta = Color(0xFF8E009A);
   static const Color trueBlue = Color(0xFF006FE4);
-  static const Color linkColor = Color(0xff0969da);
+  static const Color linkColor = Color(0xff02A9FF);
 
   // Media list status colors
   static const Color toolBox = Color(0xFF6A68C5);

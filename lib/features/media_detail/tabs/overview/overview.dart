@@ -33,136 +33,262 @@ class Overview extends StatelessWidget {
     final recommendationBloc =
         context.read<MediaDetailBloc>().recommendationAnimeBloc;
 
-    return ListView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-      ),
-      children: [
-        _buildGenres(
-          context,
-          media.genres,
-        ),
-        const Text(
-          'Description',
-          style: AppTextStyles.titleSectionStyle,
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Description(
-          description: media.description == null
-              ? "No description"
-              : media.description.toString(),
-        ),
-        if (media.trailer?.id != null && media.trailer!.id!.isNotEmpty) ...[
-          20.height,
-          const Text(
-            "Trailer",
-            style: AppTextStyles.titleSectionStyle,
-          ),
-          5.height,
-          GestureDetector(
-            onTap: () {
-              YoutubePlayerDialog.showYoutubePlayerDialog(
-                context: context,
-                youtubeId: media.trailer!.id!,
-              );
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: CoverImage(
-                    type: Enum$MediaType.MANGA,
-                    imageUrl: media.trailer!.thumbnail ?? '',
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                _buildGenres(context, media.genres),
+                const Text(
+                  'Description',
+                  style: AppTextStyles.titleSectionStyle,
+                ),
+                const SizedBox(height: 5),
+                Description(
+                  description: media.description == null
+                      ? "No description"
+                      : media.description.toString(),
+                ),
+                if (media.trailer?.id != null &&
+                    media.trailer!.id!.isNotEmpty) ...[
+                  20.height,
+                  const Text(
+                    "Trailer",
+                    style: AppTextStyles.titleSectionStyle,
                   ),
+                  5.height,
+                  GestureDetector(
+                    onTap: () {
+                      YoutubePlayerDialog.showYoutubePlayerDialog(
+                        context: context,
+                        youtubeId: media.trailer!.id!,
+                      );
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: CoverImage(
+                            type: Enum$MediaType.MANGA,
+                            imageUrl:
+                                'https://img.youtube.com/vi/${media.trailer?.id}/0.jpg',
+                          ),
+                        ),
+                        const Icon(
+                          Icons.play_arrow,
+                          size: 64,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                const Text(
+                  'Info',
+                  style: AppTextStyles.titleSectionStyle,
                 ),
-                const Icon(
-                  Icons.play_arrow,
-                  size: 64,
-                  color: Colors.white,
-                ),
+                const OverallInfo(),
+                const SizedBox(height: 20),
+                if (media.relations!.edges!.isNotEmpty) ...[
+                  const Text(
+                    "Relations",
+                    style: AppTextStyles.titleSectionStyle,
+                  ),
+                  const SizedBox(
+                    height: 150,
+                    child: Relations(),
+                  ),
+                  20.height,
+                ],
+                // Recommendations
+                if (media.recommendations!.nodes!.isNotEmpty) ...[
+                  BlocProvider.value(
+                    value: recommendationBloc,
+                    child: MediaSection<RecommendationAnimeBloc>(
+                      label: "Recommendations",
+                      onSliderPressed: () {
+                        recommendationBloc.add(LoadData(client));
+                        context.push(
+                          '/recommendations-slider',
+                          extra: recommendationBloc,
+                        );
+                      },
+                      onMorePressed: () {
+                        recommendationBloc.add(LoadData(client));
+                        context.push(
+                          '/recommendations-grid',
+                          extra: RecommendationsParameters(
+                            bloc: recommendationBloc,
+                            mediaType: media.type ?? Enum$MediaType.$unknown,
+                          ),
+                        );
+                      },
+                      heroTag: 'trending_anime',
+                      leftPadding: 0,
+                    ),
+                  ),
+                  20.height,
+                ],
+                if (media.tags!.isNotEmpty)
+                  Tags(
+                    tags: media.tags!,
+                  ),
+                if (media.externalLinks?.isNotEmpty == true) ...[
+                  const Text(
+                    "External & Streaming Links",
+                    style: AppTextStyles.titleSectionStyle,
+                  ),
+                  5.height,
+                  Wrap(
+                    runSpacing: 5,
+                    spacing: 5,
+                    children: [
+                      for (var link in media.externalLinks!)
+                        LinkSection(externalLinks: link!),
+                    ],
+                  ),
+                  const SizedBox(height: 20)
+                ],
               ],
             ),
           ),
-        ],
-
-        const SizedBox(
-          height: 20,
         ),
-        const Text(
-          'Info',
-          style: AppTextStyles.titleSectionStyle,
-        ),
-        const OverallInfo(),
-        const SizedBox(
-          height: 20,
-        ),
-        if (media.relations!.edges!.isNotEmpty) ...[
-          const Text(
-            "Relations",
-            style: AppTextStyles.titleSectionStyle,
-          ),
-          const SizedBox(
-            height: 150,
-            child: Relations(),
-          ),
-          20.height,
-        ],
-
-        // Recommendations
-
-        if (media.recommendations!.nodes!.isNotEmpty) ...[
-          BlocProvider.value(
-            value: recommendationBloc,
-            child: MediaSection<RecommendationAnimeBloc>(
-              label: "Recommendations",
-              onSliderPressed: () {
-                recommendationBloc.add(LoadData(client));
-                context.push(
-                  '/recommendations-slider',
-                  extra: recommendationBloc,
-                );
-              },
-              onMorePressed: () {
-                recommendationBloc.add(LoadData(client));
-                context.push(
-                  '/recommendations-grid',
-                  extra: RecommendationsParameters(
-                    bloc: recommendationBloc,
-                    mediaType: media.type ?? Enum$MediaType.$unknown,
-                  ),
-                );
-              },
-              heroTag: 'trending_anime',
-              leftPadding: 0,
-            ),
-          ),
-          20.height,
-        ],
-        if (media.tags!.isNotEmpty)
-          Tags(
-            tags: media.tags!,
-          ),
-        if (media.externalLinks?.isNotEmpty == true) ...[
-          const Text(
-            "External & Streaming Links",
-            style: AppTextStyles.titleSectionStyle,
-          ),
-          5.height,
-          Wrap(
-            runSpacing: 5,
-            spacing: 5,
-            children: [
-              for (var link in media.externalLinks!)
-                LinkSection(externalLinks: link!),
-            ],
-          ),
-          const SizedBox(height: 20)
-        ],
       ],
     );
+    // return ListView(
+    //   padding: const EdgeInsets.symmetric(
+    //     horizontal: 10,
+    //   ),
+    //   children: [
+    //     _buildGenres(
+    //       context,
+    //       media.genres,
+    //     ),
+    //     const Text(
+    //       'Description',
+    //       style: AppTextStyles.titleSectionStyle,
+    //     ),
+    //     const SizedBox(
+    //       height: 5,
+    //     ),
+    //     Description(
+    //       description: media.description == null
+    //           ? "No description"
+    //           : media.description.toString(),
+    //     ),
+    //     if (media.trailer?.id != null && media.trailer!.id!.isNotEmpty) ...[
+    //       20.height,
+    //       const Text(
+    //         "Trailer",
+    //         style: AppTextStyles.titleSectionStyle,
+    //       ),
+    //       5.height,
+    //       GestureDetector(
+    //         onTap: () {
+    //           YoutubePlayerDialog.showYoutubePlayerDialog(
+    //             context: context,
+    //             youtubeId: media.trailer!.id!,
+    //           );
+    //         },
+    //         child: Stack(
+    //           alignment: Alignment.center,
+    //           children: [
+    //             AspectRatio(
+    //               aspectRatio: 16 / 9,
+    //               child: CoverImage(
+    //                 type: Enum$MediaType.MANGA,
+    //                 imageUrl: media.trailer!.thumbnail ?? '',
+    //               ),
+    //             ),
+    //             const Icon(
+    //               Icons.play_arrow,
+    //               size: 64,
+    //               color: Colors.white,
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //
+    //     const SizedBox(
+    //       height: 20,
+    //     ),
+    //     const Text(
+    //       'Info',
+    //       style: AppTextStyles.titleSectionStyle,
+    //     ),
+    //     const OverallInfo(),
+    //     const SizedBox(
+    //       height: 20,
+    //     ),
+    //     if (media.relations!.edges!.isNotEmpty) ...[
+    //       const Text(
+    //         "Relations",
+    //         style: AppTextStyles.titleSectionStyle,
+    //       ),
+    //       const SizedBox(
+    //         height: 150,
+    //         child: Relations(),
+    //       ),
+    //       20.height,
+    //     ],
+    //
+    //     // Recommendations
+    //
+    //     if (media.recommendations!.nodes!.isNotEmpty) ...[
+    //       BlocProvider.value(
+    //         value: recommendationBloc,
+    //         child: MediaSection<RecommendationAnimeBloc>(
+    //           label: "Recommendations",
+    //           onSliderPressed: () {
+    //             recommendationBloc.add(LoadData(client));
+    //             context.push(
+    //               '/recommendations-slider',
+    //               extra: recommendationBloc,
+    //             );
+    //           },
+    //           onMorePressed: () {
+    //             recommendationBloc.add(LoadData(client));
+    //             context.push(
+    //               '/recommendations-grid',
+    //               extra: RecommendationsParameters(
+    //                 bloc: recommendationBloc,
+    //                 mediaType: media.type ?? Enum$MediaType.$unknown,
+    //               ),
+    //             );
+    //           },
+    //           heroTag: 'trending_anime',
+    //           leftPadding: 0,
+    //         ),
+    //       ),
+    //       20.height,
+    //     ],
+    //     if (media.tags!.isNotEmpty)
+    //       Tags(
+    //         tags: media.tags!,
+    //       ),
+    //     if (media.externalLinks?.isNotEmpty == true) ...[
+    //       const Text(
+    //         "External & Streaming Links",
+    //         style: AppTextStyles.titleSectionStyle,
+    //       ),
+    //       5.height,
+    //       Wrap(
+    //         runSpacing: 5,
+    //         spacing: 5,
+    //         children: [
+    //           for (var link in media.externalLinks!)
+    //             LinkSection(externalLinks: link!),
+    //         ],
+    //       ),
+    //       const SizedBox(height: 20)
+    //     ],
+    //   ],
+    // );
   }
 
   Widget _buildGenres(BuildContext context, List<String?>? genres) {

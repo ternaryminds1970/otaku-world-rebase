@@ -102,6 +102,7 @@ import 'package:otaku_world/features/reviews/screens/review_detail_screen.dart';
 import 'package:otaku_world/features/reviews/screens/reviews_screen.dart';
 import 'package:otaku_world/features/reviews/screens/write_review_screen.dart';
 import 'package:otaku_world/features/search/screens/search_screen.dart';
+import 'package:otaku_world/features/settings/screens/about_us_screen.dart';
 import 'package:otaku_world/features/settings/screens/anime_manga_settings_screen.dart';
 import 'package:otaku_world/features/settings/screens/list_settings.dart';
 import 'package:otaku_world/features/settings/screens/notifications_settings_screen.dart';

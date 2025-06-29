@@ -144,6 +144,7 @@ flutter:
     - assets/logos/launcher_icons/
     - assets/icons/smiley/
     - assets/icons/markdown/
+    - assets/icons/about_us/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

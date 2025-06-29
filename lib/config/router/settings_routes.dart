@@ -33,4 +33,12 @@ final settingsRoutes = [
       return const ListSettings();
     },
   ),
+  SlideTransitionRoute(
+    parentNavigatorKey: _rootNavigatorKey,
+    path: RouteConstants.aboutUs,
+    directionTween: SlideTransitionRoute.leftToRightTween,
+    builder: (state) {
+      return const AboutUsScreen();
+    },
+  ),
 ];

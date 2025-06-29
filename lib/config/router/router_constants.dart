@@ -29,6 +29,7 @@ class RouteConstants {
   static const mediaSettings = '/media-settings';
   static const notificationsSettings = '/notifications-settings';
   static const listSettings = '/list-settings';
+  static const aboutUs = '/about-us';
 
   static const discover = '/discover';
   static const social = '/social';

@@ -91,39 +91,9 @@ class MediaDetailScreen extends HookWidget {
                 },
                 body: TabBarView(
                   controller: tabController,
-                  children: [
-                    const KeepAliveTab(
-                      child: Overview(),
-                    ),
-                    KeepAliveTab(
-                      child: BlocProvider(
-                        create: (context) => CharactersBloc(mediaId: mediaId),
-                        child: const ch.Characters(),
-                      ),
-                    ),
-                    KeepAliveTab(
-                      child: BlocProvider(
-                        create: (context) => StaffBloc(mediaId: mediaId),
-                        child: const Staff(),
-                      ),
-                    ),
-                    const KeepAliveTab(
-                      child: Stats(),
-                    ),
-                    KeepAliveTab(
-                      child: BlocProvider(
-                        create: (context) => SocialBloc(mediaId: mediaId),
-                        child: const Social(),
-                      ),
-                    ),
-                    KeepAliveTab(
-                      child: BlocProvider(
-                        create: (context) =>
-                            MediaReviewBloc(mediaId: mediaId)..loadData(client),
-                        child: const Reviews(),
-                      ),
-                    ),
-                  ],
+                  children: tabs.map((tab) {
+                    return _buildTabContent(tab);
+                  }).toList(),
                 ),
               ),
               floatingActionButton:
@@ -183,6 +153,53 @@ class MediaDetailScreen extends HookWidget {
         },
       ),
     );
+  }
+
+  Widget _buildTabContent(String tab) {
+    switch (tab) {
+      case 'Overview':
+        return const KeepAliveTab(
+          child: Overview(
+          ),
+        );
+      case 'Characters':
+        return KeepAliveTab(
+          child: BlocProvider(
+            create: (context) => CharactersBloc(mediaId: mediaId),
+            child: const ch.Characters(),
+          ),
+        );
+      case 'Staff':
+        return KeepAliveTab(
+          child: BlocProvider(
+            create: (context) => StaffBloc(mediaId: mediaId),
+            child: const Staff(),
+          ),
+        );
+      case 'Stats':
+        return const KeepAliveTab(child: Stats());
+      case 'Social':
+        return KeepAliveTab(
+          child: BlocProvider(
+            create: (context) => SocialBloc(mediaId: mediaId),
+            child: const Social(),
+          ),
+        );
+      case 'Reviews':
+        return KeepAliveTab(
+          child: BlocProvider(
+            create: (context) => MediaReviewBloc(mediaId: mediaId)
+              ..loadData(
+                (context.read<GraphqlClientCubit>().state
+                        as GraphqlClientInitialized)
+                    .client,
+              ),
+            child: const Reviews(),
+          ),
+        );
+      default:
+        return const SizedBox();
+    }
   }
 
   void _onPopInvoked(BuildContext context) {

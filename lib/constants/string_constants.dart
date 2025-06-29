@@ -124,6 +124,14 @@ class ActivityConstants {
   static const alreadyInProgress = 'Action already in progress. Please wait!';
 }
 
+class AboutUsConstants {
+  static const String appName = 'Otaku World';
+  static const String aboutUsDescription =
+      ' is an unofficial AniList client for mobile, designed to give you a smooth, fan‑driven experience for tracking and discovering anime & manga on the go. Built by enthusiasts, Otaku World syncs seamlessly with your AniList account, presents all your lists and progress in a clean, intuitive interface, and makes sharing your favorites with friends effortless. Although it’s not affiliated with AniList, it’s crafted with care to feel right at home for any Otaku.';
+  static const String readOurPrivacy = '\n\nRead our privacy policy ';
+  static const String contactUs = '\n\nFound a bug or want a new feature? ';
+}
+
 class UiConstants {
   static const noImageUrl = '';
   static const noName = '';
